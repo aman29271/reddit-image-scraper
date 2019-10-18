@@ -1,14 +1,17 @@
 const axios = require("axios");
 const fs = require("fs");
 const { getIndivisualImage } = require("./getImage");
-const chalk = require('chalk')
+const chalk = require("chalk");
 
 function fetch_data(query, after = null, num) {
+  const postLimit = 100;
   let dir = `images/${query}`;
   let url;
+  const baseURI = "https://www.reddit.com/search.json";
+  const desktopURI = "https://gateway.reddit.com/desktopapi/v1/search";
 
   if (!fs.existsSync(dir)) {
-    fs.mkdir(dir,{recursive:true}, err => {
+    fs.mkdir(dir, { recursive: true }, err => {
       if (err) throw err;
     });
   }
@@ -17,34 +20,28 @@ function fetch_data(query, after = null, num) {
   //   ? {((num >100) ? url = `https://www.reddit.com/search.json?q=${query}&after=${after}&limit=100`: url = `https://www.reddit.com/search.json?q=${query}&after=${after}&limit=${num})}
   //   : (num>100 ? url = `https://www.reddit.com/search.json?q=${query}&limit=100`:url);
   if (after) {
-    if (num > 100) {
-      url = `https://www.reddit.com/search.json?q=${query}&after=${after}&limit=100`;
+    if (num > postLimit) {
+      url = `${baseURI}?q=${query}&after=${after}&limit=${postLimit}`;
     } else {
-      url = `https://www.reddit.com/search.json?q=${query}&after=${after}&limit=${num}`;
+      url = `${baseURI}?q=${query}&after=${after}&limit=${num}`;
     }
   } else {
-    if (num > 100) {
-      url = `https://www.reddit.com/search.json?q=${query}&limit=100`;
+    if (num > postLimit) {
+      url = `${baseURI}?q=${query}&limit=${postLimit}`;
     } else {
-      url = `https://www.reddit.com/search.json?q=${query}&limit=${num}`;
+      url = `${baseURI}?q=${query}&limit=${num}`;
     }
   }
   if (num > 0) {
     return axios
       .get(url)
       .then(response => {
-        after = response.data.data.after;
-        response.data.data.children.forEach(ele => {
-          // fs.writeFile("./data.txt", ele.data.url + "\n", { flag: "a" }, err => {
-          //   if (err) {
-          //     console.log(err);
-          //   } else {
-          //     console.log("writing file...");
-          //   }
-          // });
+        const { data } = response.data;
+        const {after,children} = data
+        children.forEach(ele => {
           getIndivisualImage(ele.data.url, dir);
         });
-        return fetch_data(query, after, num - 100);
+        return fetch_data(query, after, num - postLimit);
       })
       .catch(error => {
         return null;

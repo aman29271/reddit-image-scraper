@@ -1,7 +1,7 @@
 const { fetch_data } = require("./fetch-data");
 
 const defaultOptions = {
-  search:"emma stone",
+  search:"top",
   num :100
 }
 

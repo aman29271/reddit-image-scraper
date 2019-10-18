@@ -21,6 +21,8 @@ function getIndivisualImage(url, dir) {
           console.log(url, chalk.green(" downloaded successfully."));
         });
     }
+  }else{
+      console.log(chalk.red('Unknown file format.'))
   }
 }
 // getIndivisualImage(process.argv[2])
