@@ -2,3 +2,8 @@ node_modules/
 data.txt
 images/
 data.json
+scraper.js
+image.txt
+readText.js
+.env
+config.js
