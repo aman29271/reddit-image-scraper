@@ -8,6 +8,7 @@ Reddit Image Scraper
 ```bash
 git clone https://github.com/aman29271/reddit-image-scraper
 cd reddit-image-scraper
+yarn install # npm install
 node index.js <search-here> <no. of images> # node index.js 'emma watson' 10
 ```
 
