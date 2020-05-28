@@ -4,51 +4,59 @@ const { getIndivisualImage } = require("./getImage");
 const chalk = require("chalk");
 
 function fetch_data(query, after = null, num) {
-  const postLimit = 100;
   let dir = `images/${query}`;
-  let url;
-  const baseURI = "https://www.reddit.com/search.json";
+  const postLimit = 25;
   const desktopURI = "https://gateway.reddit.com/desktopapi/v1/search";
 
-  if (!fs.existsSync(dir)) {
-    fs.mkdir(dir, { recursive: true }, err => {
-      if (err) throw err;
-    });
+  function search() {
+    const baseURI = "https://www.reddit.com/search.json";
+    if (after) {
+      let limit;
+      num > postLimit ? (limit = postLimit) : (limit = num);
+      url = `${baseURI}?q=${query}&after=${after}&limit=${limit}`;
+    } else {
+      num > postLimit ? (limit = postLimit) : (limit = num);
+      url = `${baseURI}?q=${query}&limit=${limit}`;
+    }
+
+    commonFn(url);
   }
 
-  // after
-  //   ? {((num >100) ? url = `https://www.reddit.com/search.json?q=${query}&after=${after}&limit=100`: url = `https://www.reddit.com/search.json?q=${query}&after=${after}&limit=${num})}
-  //   : (num>100 ? url = `https://www.reddit.com/search.json?q=${query}&limit=100`:url);
-  if (after) {
-    if (num > postLimit) {
-      url = `${baseURI}?q=${query}&after=${after}&limit=${postLimit}`;
+  function subreddit() {
+    const baseURI = "https://www.reddit.com/r";
+    if (after) {
+      url = `${baseURI}/${query}/hot.json?after=${after}`;
     } else {
-      url = `${baseURI}?q=${query}&after=${after}&limit=${num}`;
+      url = `${baseURI}/${query}/hot.json`;
     }
-  } else {
-    if (num > postLimit) {
-      url = `${baseURI}?q=${query}&limit=${postLimit}`;
-    } else {
-      url = `${baseURI}?q=${query}&limit=${num}`;
-    }
+    commonFn(url);
   }
-  if (num > 0) {
-    return axios
-      .get(url)
-      .then(response => {
-        const { data } = response.data;
-        const {after,children} = data
-        children.forEach(ele => {
-          getIndivisualImage(ele.data.url, dir);
-        });
-        return fetch_data(query, after, num - postLimit);
-      })
-      .catch(error => {
-        return null;
-        console.log(error);
+
+  function commonFn(url) {
+    let url;
+    if (!fs.existsSync(dir)) {
+      fs.mkdir(dir, { recursive: true }, (err) => {
+        if (err) throw err;
       });
-  } else {
-    console.log(chalk.green("All files downloaded."));
+    }
+    if (num > 0) {
+      return axios
+        .get(url)
+        .then((response) => {
+          const { data } = response.data;
+          const { after, children } = data;
+          children.forEach((ele) => {
+            getIndivisualImage(ele.data.url, dir);
+          });
+          return fetch_data(query, after, num - postLimit);
+        })
+        .catch((error) => {
+          return null;
+          console.log(error);
+        });
+    } else {
+      console.log(chalk.green("All files downloaded."));
+    }
   }
 }
 module.exports = { fetch_data };

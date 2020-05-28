@@ -1,16 +1,20 @@
 #!/usr/bin/env node
-"use strict";
-const meow = require("meow");
-const { reddit_scraper } = require("./");
+'use strict';
+const { Command } = require('commander');
+const { reddit_scraper } = require('./');
 
-var cli = meow({
-    help: [
-      'Usage',
-      '  reddit-scraper <search> <num>',
-      '  reddit-scraper pics 200',
-      '  reddit-scraper pics  5']
-  });
+const program = new Command();
 
-let {search,num} = cli.input
+program
+  .version('1.0.0', '-v, --version', 'Current version')
+  .option('-f, --search <name>', ' Enter a name to search globally')
+  .option('-s, --subreddit <subreddit>', ' Enter subreddit name to find')
+  .option('-h, --hot', 'Search within Hot category', true)
+  .option('-n, --new', 'Search with New category', false)
+  .option('-t, --top', ' Search within Top category', false)
+  .option('-l, --limit', 'No. of media to fetch', 25)
+  .option('--help', 'display help for command');
 
-reddit_scraper({ search, num });
+program.parse(process.argv);
+
+reddit_scraper(program);
