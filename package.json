@@ -1,12 +1,12 @@
 {
   "name": "reddit-scraper",
   "version": "1.0.0",
-  "main": "cli.js",
+  "bin": "cli.js",
   "repository": "https://github.com/aman29271/reddit-image-scraper",
   "author": "Aman Kumar",
   "license": "MIT",
   "scripts": {
-    "start": "babel-node index.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "@babel/cli": "^7.6.4",

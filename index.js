@@ -2,12 +2,14 @@
 const chalk = require('chalk');
 
 const { fetch_data } = require('./fetch-data');
+const { end } = require('./progressBar');
 
 function main(options) {
   const newOptions = parseOption(options);
 
   fetch_data(newOptions)
     .then(() => {
+      // end();
       console.log(chalk.green('All images downloaded.'));
     })
     .catch((err) => console.log(err));

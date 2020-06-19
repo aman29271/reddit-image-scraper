@@ -61,7 +61,7 @@ function fetch_data(options) {
             Promise.all(promises)
               .then(() => {
                 afterLocal = after;
-                num = num - parseChildArray.length;
+                num = num - children.length;
                 invokedFn();
               })
               .catch((err) => reject(err));
@@ -76,7 +76,13 @@ function fetch_data(options) {
     }
   });
 }
+
 function parseChild(childArray) {
-  return childArray.filter((child) => child.data.is_video === false);
+  return childArray.filter(
+    (child) => child.data.is_video === false && extMatch(path.extname(child.data.url))
+  );
+  function extMatch(ext) {
+    return ext === '.jpg' || ext === '.png' || ext === '.gif';
+  }
 }
 module.exports = { fetch_data };
